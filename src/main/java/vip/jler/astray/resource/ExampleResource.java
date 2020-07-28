@@ -1,19 +1,19 @@
 package vip.jler.astray.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import io.quarkus.vertx.web.Route;
+import io.quarkus.vertx.web.RouteBase;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.reactivex.ext.web.RoutingContext;
 
 /**
  * @author jler
  */
-@Path("hello")
+@RouteBase(path = "e")
 public class ExampleResource {
 
-  @GET
-  @Produces(MediaType.TEXT_PLAIN)
-  public String hello() {
-    return "hello";
+  @Route(path = "/hello", methods = HttpMethod.GET)
+  void hello(RoutingContext rc) {
+    rc.response().end("hello");
   }
+
 }

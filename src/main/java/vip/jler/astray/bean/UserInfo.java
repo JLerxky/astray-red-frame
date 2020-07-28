@@ -1,24 +1,43 @@
 package vip.jler.astray.bean;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.elytron.security.common.BcryptUtil;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.security.jpa.Password;
+import io.quarkus.security.jpa.Roles;
+import io.quarkus.security.jpa.UserDefinition;
+import io.quarkus.security.jpa.Username;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author jler
  */
 @Entity
-public class UserInfo extends PanacheEntityBase {
+@Table(name = "test_user")
+@UserDefinition
+public class UserInfo extends PanacheEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userInfoSeq")
-  Long id;
   String name;
+
+  @Username
   String username;
+
+  @Password
   String password;
+
+  @ManyToMany(cascade = CascadeType.PERSIST)
+  @Roles
+  public List<Role> roles = new ArrayList<>();
+
+  public static void add(String username, String password, List<Role> roles) {
+    UserInfo user = new UserInfo();
+    user.username = username;
+    user.password = BcryptUtil.bcryptHash(password);
+    user.roles = roles;
+    user.persist();
+  }
 
   public UserInfo() {
   }
@@ -40,12 +59,19 @@ public class UserInfo extends PanacheEntityBase {
     this.password = password;
   }
 
-  public Long getId() {
-    return id;
+  public UserInfo(String name, String username, String password, List<Role> roles) {
+    this.name = name;
+    this.username = username;
+    this.password = password;
+    this.roles = roles;
   }
 
-  public void setId(Long id) {
+  public UserInfo(Long id, String name, String username, String password, List<Role> roles) {
     this.id = id;
+    this.name = name;
+    this.username = username;
+    this.password = password;
+    this.roles = roles;
   }
 
   public String getName() {
@@ -70,5 +96,13 @@ public class UserInfo extends PanacheEntityBase {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public List<Role> getRoles() {
+    return roles;
+  }
+
+  public void setRoles(List<Role> roles) {
+    this.roles = roles;
   }
 }
